@@ -1,0 +1,66 @@
+import { describe, expect, it } from 'vitest';
+import { DEFAULT_SETTINGS, settingsReducer } from './settings';
+
+describe('settingsReducer', () => {
+  it('sets the qr type and keeps field values', () => {
+    const next = settingsReducer(DEFAULT_SETTINGS, { type: 'setQrType', qrType: 'email' });
+    expect(next.content.type).toBe('email');
+  });
+
+  it('sets simple content fields', () => {
+    const next = settingsReducer(DEFAULT_SETTINGS, { type: 'setField', field: 'link', value: 'example.com' });
+    expect(next.content.link).toBe('example.com');
+  });
+
+  it('sets text and phone content fields', () => {
+    let s = settingsReducer(DEFAULT_SETTINGS, { type: 'setField', field: 'text', value: 'hi' });
+    expect(s.content.text).toBe('hi');
+    s = settingsReducer(s, { type: 'setField', field: 'phone', value: '+1555' });
+    expect(s.content.phone).toBe('+1555');
+  });
+
+  it('sets e-mail subfields', () => {
+    let s = settingsReducer(DEFAULT_SETTINGS, { type: 'setField', field: 'emailTo', value: 'a@b.com' });
+    expect(s.content.email.to).toBe('a@b.com');
+    s = settingsReducer(s, { type: 'setField', field: 'emailSubject', value: 'Hi' });
+    expect(s.content.email.subject).toBe('Hi');
+    s = settingsReducer(s, { type: 'setField', field: 'emailBody', value: 'Yo' });
+    expect(s.content.email.body).toBe('Yo');
+    expect(s.content.text).toBe('');
+  });
+
+  it('updates logo size and hideBackgroundDots without touching other settings', () => {
+    const s = settingsReducer({ ...DEFAULT_SETTINGS, stickerId: 'phone' }, {
+      type: 'setLogo', patch: { size: 0.4, hideBackgroundDots: false },
+    });
+    expect(s.logo).toEqual({ dataUrl: null, size: 0.4, hideBackgroundDots: false });
+    expect(s.stickerId).toBe('phone');
+  });
+
+  it('patches pattern, corners, logo, download independently', () => {
+    let s = settingsReducer(DEFAULT_SETTINGS, { type: 'setPattern', patch: { gradient: true } });
+    expect(s.pattern.gradient).toBe(true);
+    s = settingsReducer(s, { type: 'setCorners', patch: { dotType: 'dot' } });
+    expect(s.corners.dotType).toBe('dot');
+    s = settingsReducer(s, { type: 'setLogo', patch: { dataUrl: 'data:image/png;base64,AAA' } });
+    expect(s.logo.dataUrl).toBe('data:image/png;base64,AAA');
+    s = settingsReducer(s, { type: 'setDownload', patch: { size: 2048 } });
+    expect(s.download.size).toBe(2048);
+    expect(s.logo.dataUrl).toBe('data:image/png;base64,AAA');
+  });
+
+  it('sets and clears the sticker', () => {
+    let s = settingsReducer(DEFAULT_SETTINGS, { type: 'setSticker', stickerId: 'phone' });
+    expect(s.stickerId).toBe('phone');
+    s = settingsReducer(s, { type: 'setSticker', stickerId: null });
+    expect(s.stickerId).toBeNull();
+  });
+
+  it('patches sticker colors independently from each other', () => {
+    expect(DEFAULT_SETTINGS.sticker).toEqual({ color: '#111827', textColor: '#111827' });
+    let s = settingsReducer(DEFAULT_SETTINGS, { type: 'setStickerStyle', patch: { color: '#0a7d2c' } });
+    expect(s.sticker).toEqual({ color: '#0a7d2c', textColor: '#111827' });
+    s = settingsReducer(s, { type: 'setStickerStyle', patch: { textColor: '#7b5cd6' } });
+    expect(s.sticker).toEqual({ color: '#0a7d2c', textColor: '#7b5cd6' });
+  });
+});

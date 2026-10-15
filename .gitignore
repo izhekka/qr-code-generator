@@ -1,0 +1,23 @@
+# dependencies
+/node_modules
+
+# build output
+/.next
+/out
+next-env.d.ts
+*.tsbuildinfo
+
+# test artifacts
+/test-results
+/playwright-report
+.vitest/
+coverage/
+
+# tooling caches
+.codegraph/
+
+# superpowers session artifacts (plans, specs)
+docs/superpowers/
+
+# IDE
+.idea/
