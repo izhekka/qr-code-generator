@@ -54,7 +54,7 @@ export function BuilderClient() {
           <ContentSection settings={settings} dispatch={dispatch} error={error} />
         </Panel>
         <Panel title="2 · Design your QR code">
-          <div className="flex gap-2 border-b border-gray-200 pb-2">
+          <div className="flex gap-2 border-b border-gray-200 pb-2 mb-4">
             {TABS.map((name) => (
               <button
                 key={name}
