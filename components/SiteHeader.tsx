@@ -23,7 +23,7 @@ export function SiteHeader() {
           ))}
         </nav>
         <Link
-          href="/constructor"
+          href="/builder-static"
           className="rounded-full bg-[#23234f] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#7b5cd6]"
         >
           Create Static QR

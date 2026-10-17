@@ -4,7 +4,7 @@ import jsQR from 'jsqr';
 import * as fs from 'node:fs';
 
 async function downloadQr(page: Page, format: string, size?: string): Promise<string> {
-  await page.goto('/constructor');
+  await page.goto('/builder-static');
   await page.getByPlaceholder('https://').fill('example.com/e2e-format');
   await page.locator('[data-testid="preview-qr"] svg').first().waitFor();
   await page.getByLabel('Format').selectOption(format);
@@ -41,7 +41,7 @@ test('exports each format: SVG well-formed, rasters sized correctly, PNG scanbac
 
 test('scanback works with sticker frame and logo composited', async ({ page }, testInfo) => {
   test.setTimeout(60_000);
-  await page.goto('/constructor');
+  await page.goto('/builder-static');
   await page.getByPlaceholder('https://').fill('example.com/with-sticker');
   await page.locator('[data-testid="preview-qr"] svg').first().waitFor();
 
@@ -75,7 +75,7 @@ test('scanback works with sticker frame and logo composited', async ({ page }, t
 
 test('switching content type updates the encoded payload', async ({ page }, testInfo) => {
   test.setTimeout(60_000);
-  await page.goto('/constructor');
+  await page.goto('/builder-static');
   await page.getByRole('button', { name: /E-mail/i }).click();
   await page.getByRole('textbox', { name: 'To', exact: true }).fill('hello@example.com');
   await page.getByRole('textbox', { name: 'Subject', exact: true }).fill('Hi there');

@@ -5,7 +5,7 @@ import * as fs from 'node:fs';
 
 test('constructor downloads a scannable QR of the typed URL', async ({ page }, testInfo) => {
   test.setTimeout(30_000);
-  await page.goto('/constructor');
+  await page.goto('/builder-static');
   await expect(page.locator('header').first()).toHaveClass(/sticky/);
   await page.getByPlaceholder('https://').fill('example.com/hello-e2e');
   await page.locator('[data-testid="preview-qr"] svg').first().waitFor();

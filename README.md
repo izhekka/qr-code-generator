@@ -3,7 +3,7 @@
 A static QR code generator. QR rendering, styling and export run entirely
 in the browser; the server only serves static assets (no API routes, no
 runtime server code). Two pages: the landing page (`/`) and the QR
-constructor (`/constructor`).
+constructor (`/builder-static`).
 
 ## Tech stack
 
@@ -43,6 +43,26 @@ constructor (`/constructor`).
 
 ## Deploy (Vercel)
 
-Push to a Git host and import the repo at vercel.com/new (or run `vercel`).
-Defaults work as-is: framework preset **Next.js**, no environment variables,
-no API routes — both pages are statically rendered and served from the CDN.
+The site is fully static (framework preset **Next.js**, no environment
+variables, no API routes) — both pages are statically rendered and served
+from the CDN.
+
+**One-time setup:** link the local repo to the Vercel project
+
+    npx vercel link
+
+**Deploy from your machine**
+
+    npm run deploy          # production
+    npm run deploy:preview  # preview URL for the current branch
+
+**Deploy from GitHub** (`.github/workflows/deploy.yml`):
+
+- Runs automatically on every push to `main`.
+- Or trigger manually (Actions → Deploy → Run workflow) with the branch to
+  deploy as the input — `main` is the default. `main` deploys to production,
+  any other branch to a preview URL.
+- The workflow runs the unit tests, then builds with the Vercel CLI and
+  deploys the prebuilt output. It needs three repository secrets:
+  `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` (the ids are written
+  to `.vercel/project.json` by `vercel link`, which is gitignored).

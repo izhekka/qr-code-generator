@@ -15,6 +15,6 @@ describe('SiteHeader', () => {
     ]) {
       expect(screen.getByRole('link', { name: label })).toHaveAttribute('href', href);
     }
-    expect(screen.getByRole('link', { name: 'Create Static QR' })).toHaveAttribute('href', '/constructor');
+    expect(screen.getByRole('link', { name: 'Create Static QR' })).toHaveAttribute('href', '/builder-static');
   });
 });

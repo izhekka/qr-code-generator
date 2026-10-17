@@ -13,7 +13,11 @@ consistent across sessions.
 - **No login, no tracking, no uploads.** The landing page sells this privacy;
   don't add anything that contradicts it.
 - **Exactly two pages:** the landing `/` and the QR constructor
-  `/constructor`. New features belong inside one of them.
+  `/builder-static`. New features belong inside one of them.
+- **Never name an app route after an `Object.prototype` property**
+  (`constructor`, `hasOwnProperty`, `toString`, …) — the Vercel Next builder
+  crashes on such route names (`Unsupported output type: "undefined"`). This
+  is why the second page is `/builder-static`, not `/constructor`.
 - **A QR must always stay scannable.** Any styling feature must keep quiet
   zones and contrast sane (e.g. logo implies error-correction level `H`, see
   `buildQrConfig`).
@@ -186,7 +190,14 @@ Conventions every sticker must honor:
   all tests.
 - Commits: imperative subject ≤ 72 chars, body optional, ending with
   `Co-Authored-By: Claude Code <noreply@anthropic.com>`.
-- `.gitignore` is sectioned (dependencies / build / test artifacts / caches /
-  `docs/superpowers/` / IDE). `docs/` planning artifacts from superpowers
-  sessions stay untracked; **this file (`docs/agents.md`) is tracked**.
-- Deploy: push `main` to GitHub → Vercel picks it up. No env vars needed.
+- `.gitignore` is sectioned (dependencies / build / test artifacts /
+  `.vercel/` / caches / `docs/superpowers/` / IDE). `docs/` planning
+  artifacts from superpowers sessions stay untracked; **this file
+  (`docs/agents.md`) is tracked**.
+- Deploy (Vercel): local tasks `npm run deploy` (production) and
+  `npm run deploy:preview`; CI via `.github/workflows/deploy.yml` — auto runs
+  on pushes to `main`, or manually (Actions → Deploy → Run workflow) with a
+  branch input, `main` default. Chosen `main` → production, other branches →
+  preview; unit tests run before every deploy. Needs repo secrets
+  `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`. The site is fully
+  static (no env vars). See the README *Deploy* section for setup steps.

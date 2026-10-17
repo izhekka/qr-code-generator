@@ -1,0 +1,83 @@
+# Deploys the selected branch to Vercel: production for main, a preview URL
+# for any other branch. Triggered manually from the Actions tab (branch input,
+# main by default) and automatically on every push to main.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to deploy
+        required: false
+        default: main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    concurrency:
+      group: deploy-${{ inputs.branch || github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - name: Check out the branch to deploy
+        uses: actions/checkout@v4
+        with:
+          # manual runs use the chosen input; push runs use the pushed ref
+          ref: ${{ inputs.branch || github.ref }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test
+
+      - name: Resolve deploy target
+        id: target
+        # the branch arrives via env, never interpolated into the shell
+        env:
+          GIT_BRANCH: ${{ inputs.branch || github.ref_name }}
+        run: |
+          prod=$([ "$GIT_BRANCH" = "main" ] && echo true || echo false)
+          echo "prod=$prod" >> "$GITHUB_OUTPUT"
+          echo "Deploying branch $GIT_BRANCH (production: $prod)"
+
+      # The project uses no environment variables; building with the
+      # production environment works for preview deploys too. ORG/PROJECT
+      # ids come from secrets — .vercel/ is gitignored.
+      - name: Pull Vercel environment
+        run: npx vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Build
+        run: npx vercel build --prod --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy to production
+        if: steps.target.outputs.prod == 'true'
+        run: npx vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy preview
+        if: steps.target.outputs.prod != 'true'
+        run: npx vercel deploy --prebuilt --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

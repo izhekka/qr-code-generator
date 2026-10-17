@@ -101,7 +101,7 @@ export default function Home() {
             Pick a type, design it, download it. The whole thing takes under a minute.
           </p>
           <Link
-            href="/constructor"
+            href="/builder-static"
             className="rounded-full bg-[#23234f] px-10 py-4 text-lg font-semibold text-white shadow transition hover:bg-[#7b5cd6]"
           >
             Create Static QR
@@ -156,7 +156,7 @@ export default function Home() {
             ))}
           </div>
           <div className="mt-6 text-center sm:text-left">
-            <Link href="/constructor" className="font-semibold text-[#7b5cd6] hover:underline">
+            <Link href="/builder-static" className="font-semibold text-[#7b5cd6] hover:underline">
               Try it in the constructor →
             </Link>
           </div>
@@ -181,7 +181,7 @@ export default function Home() {
             <h2 className="mb-3 text-3xl font-bold">Ready in under a minute</h2>
             <p className="mb-8 text-gray-300">Design your code, download it, use it anywhere.</p>
             <Link
-              href="/constructor"
+              href="/builder-static"
               className="rounded-full bg-[#7b5cd6] px-10 py-4 text-lg font-semibold shadow transition hover:bg-[#9a7fde]"
             >
               Create Static QR
