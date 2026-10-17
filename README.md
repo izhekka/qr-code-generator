@@ -21,7 +21,7 @@ constructor (`/builder-static`).
     lib/                    pure logic: types, payload encoders, validation,
                             settings reducer, QR config, sticker frames, export
     e2e/                    Playwright specs
-    docs/superpowers/       design spec and implementation plan
+    docs/                   agent/contributor guides — start at docs/README.md
 
 ## Local setup
 
