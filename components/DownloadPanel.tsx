@@ -5,7 +5,9 @@ import QRCodeStyling from 'qr-code-styling';
 import { buildQrConfig } from '@/lib/qrConfig';
 import { composeSvg, rasterize, saveBlob } from '@/lib/compose';
 import type { Action } from '@/lib/actions';
+import type { ValidationErrorKey } from '@/lib/validate';
 import type { DownloadFormat, Settings } from '@/lib/types';
+import { useLocale } from './i18n';
 
 const FORMATS: DownloadFormat[] = ['png', 'jpeg', 'svg', 'webp'];
 const SIZES: Array<512 | 1024 | 2048> = [512, 1024, 2048];
@@ -13,10 +15,11 @@ const SIZES: Array<512 | 1024 | 2048> = [512, 1024, 2048];
 export function DownloadPanel({ settings, dispatch, error }: {
   settings: Settings;
   dispatch(action: Action): void;
-  error: string | null;
+  error: ValidationErrorKey | null;
 }) {
+  const { copy } = useLocale();
   const [busy, setBusy] = useState(false);
-  const [failure, setFailure] = useState<string | null>(null);
+  const [failure, setFailure] = useState<'readError' | 'failed' | null>(null);
 
   const download = async () => {
     setBusy(true);
@@ -28,7 +31,7 @@ export function DownloadPanel({ settings, dispatch, error }: {
       const raw = await exportQr.getRawData('svg');
       const text = typeof raw === 'string' ? raw : await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
-        reader.onerror = () => reject(new Error('Could not read the rendered QR.'));
+        reader.onerror = () => reject(new Error('readError'));
         reader.onload = () => resolve(String(reader.result));
         reader.readAsText(raw as Blob);
       });
@@ -42,7 +45,7 @@ export function DownloadPanel({ settings, dispatch, error }: {
         saveBlob(await rasterize(svg, settings.download.size, mime), filename);
       }
     } catch (e) {
-      setFailure(e instanceof Error ? e.message : 'Download failed.');
+      setFailure(e instanceof Error && e.message === 'readError' ? 'readError' : 'failed');
     } finally {
       setBusy(false);
     }
@@ -52,7 +55,7 @@ export function DownloadPanel({ settings, dispatch, error }: {
     <div className="flex w-full flex-col gap-3">
       <div className="flex gap-3">
         <label className="flex flex-1 flex-col gap-1 text-sm font-medium">
-          Format
+          {copy.download.format}
           <select
             value={settings.download.format}
             onChange={(e) => dispatch({ type: 'setDownload', patch: { format: e.target.value as DownloadFormat } })}
@@ -62,7 +65,7 @@ export function DownloadPanel({ settings, dispatch, error }: {
           </select>
         </label>
         <label className="flex flex-1 flex-col gap-1 text-sm font-medium">
-          Size
+          {copy.download.size}
           <select
             value={settings.download.size}
             disabled={settings.download.format === 'svg'}
@@ -78,9 +81,9 @@ export function DownloadPanel({ settings, dispatch, error }: {
         disabled={Boolean(error) || busy}
         className="rounded-xl bg-[#23234f] px-6 py-3 text-base font-semibold text-white transition hover:bg-[#7b5cd6] disabled:cursor-not-allowed disabled:bg-gray-300"
       >
-        Download QR
+        {copy.download.cta}
       </button>
-      {failure && <p className="text-sm text-red-600" role="alert">{failure}</p>}
+      {failure && <p className="text-sm text-red-600" role="alert">{failure === 'readError' ? copy.logo.readError : copy.download.failed}</p>}
     </div>
   );
 }

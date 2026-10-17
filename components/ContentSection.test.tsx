@@ -4,10 +4,11 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { DEFAULT_SETTINGS } from '@/lib/settings';
 import { ContentSection } from './ContentSection';
+import type { ValidationErrorKey } from '@/lib/validate';
 import type { Action } from '@/lib/actions';
 
 const dispatch = vi.fn<(action: Action) => void>();
-const renderSection = (error: string | null = null) =>
+const renderSection = (error: ValidationErrorKey | null = null) =>
   render(<ContentSection settings={DEFAULT_SETTINGS} dispatch={dispatch} error={error} />);
 
 describe('ContentSection', () => {
@@ -38,7 +39,7 @@ describe('ContentSection', () => {
   });
 
   it('renders the validation error in an alert role', () => {
-    renderSection('Enter a URL to generate your QR code.');
+    renderSection('enterUrl');
     expect(screen.getByRole('alert')).toHaveTextContent('Enter a URL to generate your QR code.');
   });
 });

@@ -1,6 +1,7 @@
 'use client';
 
 import type { Action } from '@/lib/actions';
+import { useLocale } from './i18n';
 import type { CornerDotType, CornerSquareType, Settings } from '@/lib/types';
 import { ColorPicker } from './controls';
 
@@ -26,11 +27,12 @@ export function CornersPanel({ settings, dispatch }: {
   dispatch(action: Action): void;
 }) {
   const c = settings.corners;
+  const { copy } = useLocale();
   return (
     <div className="flex flex-col gap-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <p className="mb-2 text-sm font-medium text-gray-500">Frame around corner dots style</p>
+          <p className="mb-2 text-sm font-medium text-gray-500">{copy.corners.squareStyle}</p>
           <div className="flex flex-wrap gap-2">
             {SQUARE_TYPES.map(({ id, glyph }) => (
               <button key={id} onClick={() => dispatch({ type: 'setCorners', patch: { squareType: id } })} className={chip(c.squareType === id)} aria-label={`Corner square ${id}`}>
@@ -40,7 +42,7 @@ export function CornersPanel({ settings, dispatch }: {
           </div>
         </div>
         <div>
-          <p className="mb-2 text-sm font-medium text-gray-500">Corner dots type</p>
+          <p className="mb-2 text-sm font-medium text-gray-500">{copy.corners.dotsType}</p>
           <div className="flex flex-wrap gap-2">
             {CORNER_DOT_TYPES.map(({ id, glyph }) => (
               <button key={id} onClick={() => dispatch({ type: 'setCorners', patch: { dotType: id } })} className={chip(c.dotType === id)} aria-label={`Corner dot ${id}`}>
@@ -51,8 +53,8 @@ export function CornersPanel({ settings, dispatch }: {
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <ColorPicker label="Corner square color" value={c.squareColor} onChange={(squareColor) => dispatch({ type: 'setCorners', patch: { squareColor } })} />
-        <ColorPicker label="Corner dots color" value={c.dotColor} onChange={(dotColor) => dispatch({ type: 'setCorners', patch: { dotColor } })} />
+        <ColorPicker label={copy.corners.squareColor} value={c.squareColor} onChange={(squareColor) => dispatch({ type: 'setCorners', patch: { squareColor } })} />
+        <ColorPicker label={copy.corners.dotColor} value={c.dotColor} onChange={(dotColor) => dispatch({ type: 'setCorners', patch: { dotColor } })} />
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { LocaleProvider } from '@/components/i18n';
 import { SiteFooter } from '@/components/SiteFooter';
 import { SiteHeader } from '@/components/SiteHeader';
 import './globals.css';
@@ -12,9 +13,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="bg-[#f1f2f6] text-[#23234f] antialiased">
-        <SiteHeader />
-        {children}
-        <SiteFooter />
+        <LocaleProvider>
+          <SiteHeader />
+          {children}
+          <SiteFooter />
+        </LocaleProvider>
       </body>
     </html>
   );

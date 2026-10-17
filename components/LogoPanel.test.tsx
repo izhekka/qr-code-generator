@@ -5,6 +5,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { DEFAULT_SETTINGS } from '@/lib/settings';
 import { PanelHarness } from '@/tests/harness';
 import { LogoPanel } from './LogoPanel';
+import { LocaleProvider } from './i18n';
+import { COPY } from '@/lib/i18n';
 import type { Action } from '@/lib/actions';
 
 const dispatch = vi.fn<(action: Action) => void>();
@@ -63,5 +65,19 @@ describe('LogoPanel', () => {
     render(<LogoPanel settings={withLogo} dispatch={dispatch} />);
     await userEvent.click(screen.getByRole('button', { name: 'Remove logo' }));
     expect(dispatch).toHaveBeenCalledWith({ type: 'setLogo', patch: { dataUrl: null } });
+  });
+
+  it('shows Russian logo labels when locale is ru', async () => {
+    window.localStorage.setItem('qr-locale', 'ru');
+    render(
+      <LocaleProvider>
+        <PanelHarness>{(s, d) => <LogoPanel settings={s} dispatch={d} />}</PanelHarness>
+      </LocaleProvider>,
+    );
+    expect(await screen.findByRole('button', { name: COPY.ru.logo.upload })).toBeInTheDocument();
+    const input = screen.getByRole('button', { name: COPY.ru.logo.upload }).closest('div')!.querySelector<HTMLInputElement>('input[type=file]');
+    fireEvent.change(input!, { target: { files: [file('logo.txt', 'text/plain')] } });
+    expect(screen.getByRole('alert')).toHaveTextContent(COPY.ru.logo.pickImage);
+    window.localStorage.removeItem('qr-locale');
   });
 });

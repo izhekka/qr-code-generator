@@ -5,6 +5,7 @@ import type QRCodeStyling from 'qr-code-styling';
 import { buildQrConfig, moduleCount } from '@/lib/qrConfig';
 import { logoHoleFraction, backgroundLayer, LOGO_SPAN } from '@/lib/compose';
 import { getSticker } from '@/lib/stickers';
+import { useLocale } from './i18n';
 import type { Settings } from '@/lib/types';
 
 const PREVIEW = 360;
@@ -37,6 +38,7 @@ export function QrPreview({ settings, qr }: {
 }) {
   const mount = useRef<HTMLDivElement>(null);
   const stuck = useRef(false);
+  const { copy } = useLocale();
   const sticker = settings.stickerId ? getSticker(settings.stickerId) : null;
   const qrRect = sticker ? sticker.qrRect : { x: 0, y: 0, w: 1000 };
   const size = Math.round((PREVIEW * qrRect.w) / 1000);
@@ -87,7 +89,7 @@ export function QrPreview({ settings, qr }: {
         /* eslint-disable-next-line @next/next/no-img-element */
         <img
           src={settings.logo.dataUrl}
-          alt="Logo"
+          alt={copy.logo.alt}
           data-testid="preview-logo"
           className="pointer-events-none absolute object-contain"
           style={{

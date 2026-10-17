@@ -1,6 +1,7 @@
 'use client';
 
 import type { Action } from '@/lib/actions';
+import { useLocale } from './i18n';
 import { listStickers } from '@/lib/stickers';
 import type { Settings } from '@/lib/types';
 import { ColorPicker } from './controls';
@@ -9,10 +10,11 @@ export function StickerPanel({ settings, dispatch }: {
   settings: Settings;
   dispatch(action: Action): void;
 }) {
+  const { copy } = useLocale();
   const stickerColors = { stroke: settings.sticker.color, text: settings.sticker.textColor };
   return (
     <div>
-      <p className="mb-3 text-sm font-medium text-gray-500">Sticker frame</p>
+      <p className="mb-3 text-sm font-medium text-gray-500">{copy.sticker.caption}</p>
       <div className="flex flex-wrap gap-3">
         <button
           onClick={() => dispatch({ type: 'setSticker', stickerId: null })}
@@ -36,8 +38,8 @@ export function StickerPanel({ settings, dispatch }: {
         ))}
       </div>
       <div className="mt-4 flex flex-wrap gap-6">
-        <ColorPicker label="Sticker color" value={settings.sticker.color} onChange={(color) => dispatch({ type: 'setStickerStyle', patch: { color } })} />
-        <ColorPicker label="Text color" value={settings.sticker.textColor} onChange={(textColor) => dispatch({ type: 'setStickerStyle', patch: { textColor } })} />
+        <ColorPicker label={copy.sticker.color} value={settings.sticker.color} onChange={(color) => dispatch({ type: 'setStickerStyle', patch: { color } })} />
+        <ColorPicker label={copy.sticker.textColor} value={settings.sticker.textColor} onChange={(textColor) => dispatch({ type: 'setStickerStyle', patch: { textColor } })} />
       </div>
     </div>
   );

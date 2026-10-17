@@ -3,6 +3,7 @@
 import type { Action } from '@/lib/actions';
 import type { DotType, Settings } from '@/lib/types';
 import { hex } from '@/lib/qrConfig';
+import { useLocale } from './i18n';
 import { ColorPicker, Toggle } from './controls';
 
 const DOT_TYPES: DotType[] = ['square', 'dots', 'rounded', 'classy', 'classy-rounded', 'extra-rounded'];
@@ -40,12 +41,13 @@ export function PatternPanel({ settings, dispatch }: {
   dispatch(action: Action): void;
 }) {
   const p = settings.pattern;
+  const { copy } = useLocale();
   const patch = (p2: Partial<typeof p>) => dispatch({ type: 'setPattern', patch: p2 });
 
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <p className="mb-2 text-sm font-medium text-gray-500">QR code pattern</p>
+        <p className="mb-2 text-sm font-medium text-gray-500">{copy.pattern.caption}</p>
         <div className="flex flex-wrap gap-2">
           {DOT_TYPES.map((t) => (
             <button
@@ -63,26 +65,26 @@ export function PatternPanel({ settings, dispatch }: {
       </div>
 
       <div className="flex flex-wrap items-center gap-4">
-        <ColorPicker label="Pattern color" value={p.color} onChange={(color) => patch({ color })} />
-        <Toggle label="Use gradient pattern" checked={p.gradient} onChange={(gradient) => patch({ gradient })} />
+        <ColorPicker label={copy.pattern.colorLabel} value={p.color} onChange={(color) => patch({ color })} />
+        <Toggle label={copy.pattern.gradient} checked={p.gradient} onChange={(gradient) => patch({ gradient })} />
       </div>
       {p.gradient && (
         <div className="flex items-center gap-4">
-          <ColorPicker label="Gradient from" value={p.colorFrom} onChange={(colorFrom) => patch({ colorFrom })} />
-          <ColorPicker label="Gradient to" value={p.colorTo} onChange={(colorTo) => patch({ colorTo })} />
+          <ColorPicker label={copy.pattern.from} value={p.colorFrom} onChange={(colorFrom) => patch({ colorFrom })} />
+          <ColorPicker label={copy.pattern.to} value={p.colorTo} onChange={(colorTo) => patch({ colorTo })} />
         </div>
       )}
 
       <hr className="border-gray-200" />
       <div className="flex flex-wrap items-center gap-4">
-        <ColorPicker label="Background color" value={p.bgColor} onChange={(bgColor) => patch({ bgColor })} />
-        <Toggle label="Use transparent background" checked={p.transparentBg} onChange={(transparentBg) => patch({ transparentBg })} />
-        <Toggle label="Use gradient background" checked={p.transparentBg ? false : p.bgGradient} onChange={(bgGradient) => patch({ bgGradient })} />
+        <ColorPicker label={copy.pattern.backgroundColor} value={p.bgColor} onChange={(bgColor) => patch({ bgColor })} />
+        <Toggle label={copy.pattern.transparent} checked={p.transparentBg} onChange={(transparentBg) => patch({ transparentBg })} />
+        <Toggle label={copy.pattern.backgroundGradient} checked={p.transparentBg ? false : p.bgGradient} onChange={(bgGradient) => patch({ bgGradient })} />
       </div>
       {p.bgGradient && !p.transparentBg && (
         <div className="flex items-center gap-4">
-          <ColorPicker label="Background from" value={p.bgFrom} onChange={(bgFrom) => patch({ bgFrom })} />
-          <ColorPicker label="Background to" value={p.bgTo} onChange={(bgTo) => patch({ bgTo })} />
+          <ColorPicker label={copy.pattern.backgroundFrom} value={p.bgFrom} onChange={(bgFrom) => patch({ bgFrom })} />
+          <ColorPicker label={copy.pattern.backgroundTo} value={p.bgTo} onChange={(bgTo) => patch({ bgTo })} />
         </div>
       )}
     </div>

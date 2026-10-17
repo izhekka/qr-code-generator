@@ -34,7 +34,7 @@ afterEach(() => {
 
 describe('DownloadPanel', () => {
   it('disables the download button while the content error is set', () => {
-    render(<DownloadPanel settings={DEFAULT_SETTINGS} dispatch={dispatch} error="Enter a URL to generate your QR code." />);
+    render(<DownloadPanel settings={DEFAULT_SETTINGS} dispatch={dispatch} error="enterUrl" />);
     expect(screen.getByRole('button', { name: 'Download QR' })).toBeDisabled();
     expect(saveBlob).not.toHaveBeenCalled();
   });
@@ -92,7 +92,9 @@ describe('DownloadPanel', () => {
     render(<DownloadPanel settings={AS_SVG} dispatch={dispatch} error={null} />);
     await userEvent.click(screen.getByRole('button', { name: 'Download QR' }));
 
-    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('disk gone'));
+    // Unexpected throw sites surface the generic localized failure instead of
+    // a raw English message.
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Download failed.'));
     expect(saveBlob).toHaveBeenCalledTimes(1);
   });
 });

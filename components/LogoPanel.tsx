@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { useLocale } from './i18n';
 import type { Action } from '@/lib/actions';
 import type { Settings } from '@/lib/types';
 
@@ -9,22 +10,24 @@ export function LogoPanel({ settings, dispatch }: {
   dispatch(action: Action): void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  // Stable keys, translated at render — see copy.logo in lib/i18n.ts.
+  const [uploadError, setUploadError] = useState<'pickImage' | 'readError' | null>(null);
+  const { copy } = useLocale();
   const logo = settings.logo;
 
   const onFile = (file: File | undefined) => {
     setUploadError(null);
     if (!file) return;
     if (!/^(image\/(png|jpeg|webp|svg\+xml))$/.test(file.type)) {
-      setUploadError('Pick a PNG, JPEG, WEBP or SVG image.');
+      setUploadError('pickImage');
       return;
     }
     const reader = new FileReader();
-    reader.onerror = () => setUploadError('Could not read that file.');
+    reader.onerror = () => setUploadError('readError');
     reader.onload = () => {
       const result = typeof reader.result === 'string' ? reader.result : null;
       if (result) dispatch({ type: 'setLogo', patch: { dataUrl: result } });
-      else setUploadError('Could not read that file.');
+      else setUploadError('readError');
     };
     reader.readAsDataURL(file);
   };
@@ -43,17 +46,17 @@ export function LogoPanel({ settings, dispatch }: {
           onClick={() => fileRef.current?.click()}
           className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold hover:border-[#7b5cd6]"
         >
-          Upload logo
+          {copy.logo.upload}
         </button>
-        {uploadError && <p className="mt-2 text-sm text-red-600" role="alert">{uploadError}</p>}
+        {uploadError && <p className="mt-2 text-sm text-red-600" role="alert">{copy.logo[uploadError]}</p>}
       </div>
 
       {logo.dataUrl && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logo.dataUrl} alt="Logo preview" className="h-16 w-16 rounded border border-gray-200 bg-white object-contain" />
+          <img src={logo.dataUrl} alt={copy.logo.previewAlt} className="h-16 w-16 rounded border border-gray-200 bg-white object-contain" />
           <label className="flex flex-col gap-1 text-sm font-medium">
-            Logo size ({Math.round(logo.size * 100)}%)
+            {copy.logo.size} ({Math.round(logo.size * 100)}%)
             {/* snaps to 10% steps; the percent is of the QR's dot area
                 (see compose.logoGeometry for the geometry + scan budget) */}
             <input
@@ -67,13 +70,13 @@ export function LogoPanel({ settings, dispatch }: {
             />
           </label>
           {logo.size >= 0.4 && (
-            <p className="text-xs text-amber-700">From 40% up the cleared area may exceed what scanners can read — 30% or smaller scans reliably.</p>
+            <p className="text-xs text-amber-700">{copy.logo.warn40}</p>
           )}
           <button
             onClick={() => dispatch({ type: 'setLogo', patch: { dataUrl: null } })}
             className="self-start text-sm font-semibold text-red-600 hover:underline"
           >
-            Remove logo
+            {copy.logo.remove}
           </button>
         </>
       )}

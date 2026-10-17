@@ -14,6 +14,8 @@ vi.mock('qr-code-styling', () => ({
 }));
 
 import { BuilderClient } from './BuilderClient';
+import { LocaleProvider } from './i18n';
+import { COPY } from '@/lib/i18n';
 
 describe('BuilderClient', () => {
   afterEach(cleanup);
@@ -72,5 +74,20 @@ describe('BuilderClient', () => {
     await userEvent.click(screen.getByRole('button', { name: /Sticker square/ }));
     // Frame overlay appears over the preview because the sticker got selected.
     expect(screen.getByTestId('preview').querySelector('.pointer-events-none')).not.toBeNull();
+  });
+
+  it('renders Russian step titles and tabs when locale is ru', async () => {
+    window.localStorage.setItem('qr-locale', 'ru');
+    render(
+      <LocaleProvider>
+        <BuilderClient />
+      </LocaleProvider>,
+    );
+    expect(await screen.findByRole('heading', { name: COPY.ru.steps.one })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: COPY.ru.steps.two })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: COPY.ru.steps.three })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: COPY.ru.tabs.logo })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: COPY.ru.download.cta })).toBeDisabled();
+    window.localStorage.removeItem('qr-locale');
   });
 });

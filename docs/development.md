@@ -27,7 +27,12 @@ full, token-filtered-free output.
   so it runs in node tests; browser-only code (canvas, `Image`, download
   anchor) is isolated in `compose.ts` helpers (`rasterize`, `saveBlob`).
 - Components are client components (`'use client'`) only when they need state
-  or the QR library; landing-page sections stay server components.
+  or the QR library; sections rendering localized copy additionally read the
+  shared locale from `useLocale()` (`components/i18n.tsx`; locale stored in
+  `localStorage('qr-locale')`, default `en`). `lib/` stays free of
+  browser/React dependencies — locale strings are plain data in `lib/i18n.ts`
+  (`COPY.ru` typed as the same `Copy` shape as English, so key parity is a
+  compile-time guarantee).
 - Tailwind for all styling, arbitrary-value classes like `bg-[#23234f]` /
   `text-[#7b5cd6]`; design tokens are CSS variables in `app/globals.css`
   (`--bg #f1f2f6`, `--navy #23234f`, `--purple #7b5cd6`). Class order in

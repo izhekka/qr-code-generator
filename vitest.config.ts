@@ -8,7 +8,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: ['lib/**/*.test.ts', 'components/**/*.test.tsx', 'tests/unit/*.test.ts'],
+    include: ['lib/**/*.test.ts', 'components/**/*.test.tsx', 'app/**/*.test.tsx', 'tests/unit/*.test.ts'],
     environment: 'node',
     globals: true,
     setupFiles: ['tests/setup.ts'],

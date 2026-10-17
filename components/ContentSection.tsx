@@ -1,7 +1,9 @@
 'use client';
 
 import type { Action } from '@/lib/actions';
+import type { ValidationErrorKey } from '@/lib/validate';
 import type { ContentField, QrType, Settings } from '@/lib/types';
+import { useLocale } from './i18n';
 
 const TYPES: { id: QrType; icon: string }[] = [
   { id: 'link', icon: '🔗' },
@@ -16,9 +18,10 @@ const inputClass =
 export function ContentSection({ settings, dispatch, error }: {
   settings: Settings;
   dispatch(action: Action): void;
-  error: string | null;
+  error: ValidationErrorKey | null;
 }) {
   const { content } = settings;
+  const { copy } = useLocale();
   const set = (field: ContentField) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     dispatch({ type: 'setField', field, value: e.target.value });
 
@@ -35,14 +38,14 @@ export function ContentSection({ settings, dispatch, error }: {
                 : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'
             }`}
           >
-            <span aria-hidden>{icon}</span> {id === 'email' ? 'E-mail' : id}
+            <span aria-hidden>{icon}</span> {copy.content.types[id]}
           </button>
         ))}
       </div>
 
       {content.type === 'link' && (
         <label className="flex flex-col gap-1 text-sm font-medium">
-          Enter your Website
+          {copy.content.linkLabel}
           <input
             type="text"
             placeholder="https://"
@@ -55,7 +58,7 @@ export function ContentSection({ settings, dispatch, error }: {
 
       {content.type === 'text' && (
         <label className="flex flex-col gap-1 text-sm font-medium">
-          Enter your text
+          {copy.content.textLabel}
           <textarea rows={4} value={content.text} onChange={set('text')} className={inputClass} />
         </label>
       )}
@@ -63,15 +66,15 @@ export function ContentSection({ settings, dispatch, error }: {
       {content.type === 'email' && (
         <div className="flex flex-col gap-3 text-sm font-medium">
           <label className="flex flex-col gap-1">
-            To
+            {copy.content.to}
             <input type="email" value={content.email.to} onChange={set('emailTo')} className={inputClass} />
           </label>
           <label className="flex flex-col gap-1">
-            Subject
+            {copy.content.subject}
             <input type="text" value={content.email.subject} onChange={set('emailSubject')} className={inputClass} />
           </label>
           <label className="flex flex-col gap-1">
-            Body
+            {copy.content.body}
             <textarea rows={3} value={content.email.body} onChange={set('emailBody')} className={inputClass} />
           </label>
         </div>
@@ -79,12 +82,12 @@ export function ContentSection({ settings, dispatch, error }: {
 
       {content.type === 'call' && (
         <label className="flex flex-col gap-1 text-sm font-medium">
-          Phone number
+          {copy.content.phoneLabel}
           <input type="tel" placeholder="+1 555 010 2030" value={content.phone} onChange={set('phone')} className={inputClass} />
         </label>
       )}
 
-      {error && <p className="text-sm text-red-600" role="alert">{error}</p>}
+      {error && <p className="text-sm text-red-600" role="alert">{copy.validation[error]}</p>}
     </div>
   );
 }
