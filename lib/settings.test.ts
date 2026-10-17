@@ -29,11 +29,11 @@ describe('settingsReducer', () => {
     expect(s.content.text).toBe('');
   });
 
-  it('updates logo size and hideBackgroundDots without touching other settings', () => {
+  it('updates logo size without touching other settings', () => {
     const s = settingsReducer({ ...DEFAULT_SETTINGS, stickerId: 'phone' }, {
-      type: 'setLogo', patch: { size: 0.4, hideBackgroundDots: false },
+      type: 'setLogo', patch: { size: 0.4 },
     });
-    expect(s.logo).toEqual({ dataUrl: null, size: 0.4, hideBackgroundDots: false });
+    expect(s.logo).toEqual({ dataUrl: null, size: 0.4 });
     expect(s.stickerId).toBe('phone');
   });
 
@@ -57,10 +57,18 @@ describe('settingsReducer', () => {
   });
 
   it('patches sticker colors independently from each other', () => {
-    expect(DEFAULT_SETTINGS.sticker).toEqual({ color: '#111827', textColor: '#111827' });
+    expect(DEFAULT_SETTINGS.sticker).toEqual({ color: '#000000', textColor: '#000000' });
     let s = settingsReducer(DEFAULT_SETTINGS, { type: 'setStickerStyle', patch: { color: '#0a7d2c' } });
-    expect(s.sticker).toEqual({ color: '#0a7d2c', textColor: '#111827' });
+    expect(s.sticker).toEqual({ color: '#0a7d2c', textColor: '#000000' });
     s = settingsReducer(s, { type: 'setStickerStyle', patch: { textColor: '#7b5cd6' } });
     expect(s.sticker).toEqual({ color: '#0a7d2c', textColor: '#7b5cd6' });
+  });
+
+  it('defaults every ink color to black, background stays white', () => {
+    expect(DEFAULT_SETTINGS.pattern.color).toBe('#000000');
+    expect(DEFAULT_SETTINGS.pattern.colorFrom).toBe('#000000');
+    expect(DEFAULT_SETTINGS.pattern.colorTo).toBe('#000000');
+    expect(DEFAULT_SETTINGS.pattern.bgColor).toBe('#ffffff');
+    expect(DEFAULT_SETTINGS.corners).toEqual({ squareType: 'square', squareColor: '#000000', dotType: 'square', dotColor: '#000000' });
   });
 });

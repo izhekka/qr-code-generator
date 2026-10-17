@@ -72,4 +72,30 @@ describe('QrPreview', () => {
     render(<QrPreview settings={s} qr={fakeQr()} />);
     expect(screen.getByTestId('preview-bg').innerHTML).toBe('');
   });
+
+  it('masks the QR with a hole at the logo percent and shows the logo on top', () => {
+    const s: Settings = { ...DEFAULT_SETTINGS, logo: { dataUrl: 'data:image/png;base64,AAA', size: 0.4 } };
+    render(<QrPreview settings={s} qr={fakeQr()} />);
+    const qr = screen.getByTestId('preview-qr') as HTMLElement;
+    expect(qr.style.maskImage).toContain('image/svg+xml');
+    // the hole spans whole modules (moduleCount 21 for the default empty
+    // payload) around the 40% box (32.4..67.6) → 31.14..68.86; painted as
+    // four ring rects, the hole itself left unpainted (alpha masks +
+    // SVG can't "erase", a full-canvas rect would mask nothing)
+    expect(qr.style.maskImage).toContain("x='0' y='31.14' width='31.14' height='37.72'");
+    expect(qr.style.maskImage).toContain("x='68.86' y='31.14' width='31.14' height='37.72'");
+    expect(qr.style.maskImage).not.toContain("y='0' width='100' height='100'");
+    const logo = screen.getByTestId('preview-logo') as HTMLImageElement;
+    expect(logo.src).toBe('data:image/png;base64,AAA');
+    expect(logo.style.width).toBe('126.72px');
+    // same geometry rule as compose.ts: centered on the QR box
+    expect(parseFloat(logo.style.left)).toBeCloseTo(116.64, 1);
+  });
+
+  it('emits no logo layer or mask without a logo', () => {
+    render(<QrPreview settings={DEFAULT_SETTINGS} qr={fakeQr()} />);
+    expect(screen.queryByTestId('preview-logo')).toBeNull();
+    const qr = screen.getByTestId('preview-qr') as HTMLElement;
+    expect(qr.style.maskImage).toBe('');
+  });
 });

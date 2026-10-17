@@ -54,13 +54,9 @@ describe('LogoPanel', () => {
     expect(dispatch).toHaveBeenCalledWith({ type: 'setLogo', patch: { size: 0.2 } });
   });
 
-  it('dispatches hideBackgroundDots from the toggle', async () => {
+  it('has no "clear dots behind the logo" checkbox — dot clearing is always on', () => {
     render(<LogoPanel settings={withLogo} dispatch={dispatch} />);
-    await userEvent.click(screen.getByRole('checkbox', { name: 'Clear dots behind the logo' }));
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'setLogo',
-      patch: { hideBackgroundDots: !DEFAULT_SETTINGS.logo.hideBackgroundDots },
-    });
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
   });
 
   it('dispatches setLogo with a null data URL when Remove logo is clicked', async () => {

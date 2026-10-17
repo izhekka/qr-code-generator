@@ -4,15 +4,16 @@ import type { Settings } from './types';
 export const DEFAULT_SETTINGS: Settings = {
   content: { type: 'link', link: '', text: '', email: { to: '', subject: '', body: '' }, phone: '' },
   stickerId: null,
-  sticker: { color: '#111827', textColor: '#111827' },
+  // black ink everywhere; the background stays white so the default QR scans
+  sticker: { color: '#000000', textColor: '#000000' },
   pattern: {
-    dotType: 'square', color: '#23234f',
-    gradient: false, colorFrom: '#23234f', colorTo: '#7b5cd6',
+    dotType: 'square', color: '#000000',
+    gradient: false, colorFrom: '#000000', colorTo: '#000000',
     bgColor: '#ffffff', transparentBg: false,
     bgGradient: false, bgFrom: '#dbeafe', bgTo: '#ede9fe',
   },
-  corners: { squareType: 'square', squareColor: '#23234f', dotType: 'square', dotColor: '#23234f' },
-  logo: { dataUrl: null, size: 0.3, hideBackgroundDots: true },
+  corners: { squareType: 'square', squareColor: '#000000', dotType: 'square', dotColor: '#000000' },
+  logo: { dataUrl: null, size: 0.3 },
   download: { format: 'png', size: 1024 },
 };
 

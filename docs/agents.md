@@ -79,6 +79,21 @@ A rendered QR is **three layers** on a 0..1000 canvas:
    `composeSvg` strips.
 3. **Frame** — `sticker.frame(label, colors)` markup on top.
 
+**Logo compositing is app-owned, never library-owned.** The library's logo
+image sizing derives the drawn box from hidden-dot math quantized to odd
+module counts, which collapses neighboring slider stops (20% ≡ 30%). So
+`buildQrConfig` passes **no** `image`/`imageOptions` (a logo only flips
+error-correction to `H`); instead the composition clears a centered mask
+hole at `logoGeometry` snapped **outward to whole modules**
+(`logoHoleFraction` — so no partially-clipped dot touches the logo edge)
+and overlays the image in that exact box. `moduleCount`
+(`lib/qrConfig.ts`) reads the grid from the same `qrcode-generator` call
+the library renders with. The preview mirrors this with a CSS
+`mask-image` hole + positioned `<img>` (note: CSS masks read the **alpha**
+channel, so the hole must be left unpainted, not "drawn black"). Slider
+stops ≤30% scan reliably; 40%+ can exceed decoders' damage tolerance —
+don't "fix" that by rounding the hole to library-style odd modules.
+
 Both the preview (`components/QrPreview.tsx`) and the export
 (`components/DownloadPanel.tsx` → `composeSvg` → `rasterize`/`saveBlob`) use
 this exact pipeline, so preview and file always match. **Exports always

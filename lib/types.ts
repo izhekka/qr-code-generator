@@ -39,8 +39,8 @@ export interface CornersSettings {
 
 export interface LogoSettings {
   dataUrl: string | null;
-  size: number;       // 0.1–0.4, passed as imageOptions.scale
-  hideBackgroundDots: boolean;
+  /** 0.1–0.5 in 10% steps — percent of the QR's dot area the logo covers (see compose.logoGeometry; ≤30% scans reliably). */
+  size: number;
 }
 
 export type DownloadFormat = 'png' | 'jpeg' | 'svg' | 'webp';

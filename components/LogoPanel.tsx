@@ -3,7 +3,6 @@
 import { useRef, useState } from 'react';
 import type { Action } from '@/lib/actions';
 import type { Settings } from '@/lib/types';
-import { Toggle } from './controls';
 
 export function LogoPanel({ settings, dispatch }: {
   settings: Settings;
@@ -55,21 +54,21 @@ export function LogoPanel({ settings, dispatch }: {
           <img src={logo.dataUrl} alt="Logo preview" className="h-16 w-16 rounded border border-gray-200 bg-white object-contain" />
           <label className="flex flex-col gap-1 text-sm font-medium">
             Logo size ({Math.round(logo.size * 100)}%)
+            {/* snaps to 10% steps; the percent is of the QR's dot area
+                (see compose.logoGeometry for the geometry + scan budget) */}
             <input
               type="range"
               min={0.1}
-              max={0.4}
-              step={0.02}
+              max={0.5}
+              step={0.1}
               value={logo.size}
               onChange={(e) => dispatch({ type: 'setLogo', patch: { size: Number(e.target.value) } })}
               className="w-full accent-[#7b5cd6]"
             />
           </label>
-          <Toggle
-            label="Clear dots behind the logo"
-            checked={logo.hideBackgroundDots}
-            onChange={(hideBackgroundDots) => dispatch({ type: 'setLogo', patch: { hideBackgroundDots } })}
-          />
+          {logo.size >= 0.4 && (
+            <p className="text-xs text-amber-700">From 40% up the cleared area may exceed what scanners can read — 30% or smaller scans reliably.</p>
+          )}
           <button
             onClick={() => dispatch({ type: 'setLogo', patch: { dataUrl: null } })}
             className="self-start text-sm font-semibold text-red-600 hover:underline"

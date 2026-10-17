@@ -21,11 +21,18 @@ describe('buildQrConfig', () => {
     expect(buildQrConfig(DEFAULT_SETTINGS).qrOptions?.errorCorrectionLevel).toBe('M');
   });
 
-  it('uses H and embeds the image when a logo is set', () => {
-    const s = { ...DEFAULT_SETTINGS, logo: { dataUrl: 'data:image/png;base64,AAA', size: 0.4, hideBackgroundDots: true } };
+  it('uses error correction H when a logo is set', () => {
+    const s = { ...DEFAULT_SETTINGS, logo: { dataUrl: 'data:image/png;base64,AAA', size: 0.4 } };
     const config = buildQrConfig(s);
     expect(config.qrOptions?.errorCorrectionLevel).toBe('H');
-    expect(config.image).toBe('data:image/png;base64,AAA');
+  });
+
+  it('leaves the logo to the composition — the library draws no image', () => {
+    // the library's image sizing is quantized to odd module counts, which
+    // collapses neighboring logo-size stops (20% ≡ 30%, 40% ≡ 50%)
+    const withLogo = { ...DEFAULT_SETTINGS, logo: { dataUrl: 'data:image/png;base64,AAA', size: 0.4 } };
+    expect(buildQrConfig(withLogo).image).toBeUndefined();
+    expect(buildQrConfig(withLogo).imageOptions).toBeUndefined();
   });
 
   it('emits solid and gradient dot colors', () => {
