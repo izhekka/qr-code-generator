@@ -33,6 +33,19 @@ Next-specific code.
 into the QR string; `getValidationError` (`lib/validate.ts`) returns the
 human error or `null`.
 
+### QR standard compliance
+
+Rendering uses `qrcode-generator@^1.4.4` (bundled into `qr-code-styling`, and
+called directly by `moduleCount` in `lib/qrConfig.ts`), which emits **QR Model
+2 symbols only** (ISO/IEC 18004, versions 1–40, auto-selected) — the format
+native iOS/Android cameras expect. The engine cannot produce Model 1 or Micro
+QR and enforces the Model 2 capacity tables exactly, so an oversize payload
+throws rather than yielding a non-standard symbol. `getValidationError`
+(`lib/validate.ts`) therefore caps payloads at the version-40 byte ceiling via
+`maxPayloadLength` — 2331 chars at EC M, 1273 at EC H — before the renderer
+ever sees them. The e2e suite decodes rendered output with jsQR, itself a
+Model-2-only decoder, so scanability is regression-tested end to end.
+
 ### Composition model (lib/compose.ts) — the key invariant
 
 A rendered QR is **three layers** on a 0..1000 canvas:

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
@@ -74,6 +74,55 @@ describe('BuilderClient', () => {
     await userEvent.click(screen.getByRole('button', { name: /Sticker square/ }));
     // Frame overlay appears over the preview because the sticker got selected.
     expect(screen.getByTestId('preview').querySelector('.pointer-events-none')).not.toBeNull();
+  });
+
+  it('hides the preview while the payload is too long, and only then', async () => {
+    render(<BuilderClient />);
+    const input = screen.getByPlaceholderText('https://');
+    await userEvent.type(input, 'example.com/x');
+    expect(screen.getByTestId('preview-qr')).toBeInTheDocument();
+
+    // payload just past the EC-M Model 2 ceiling (normalized: 2340 > 2331
+    // code units); jsdom has no clipboard, a paste is just a value change
+    fireEvent.change(input, { target: { value: 'example.com/' + 'a'.repeat(2320) } });
+    expect(screen.getByRole('alert')).toHaveTextContent('Content is too long for a QR code.');
+    expect(screen.queryByTestId('preview-qr')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Download QR' })).toBeDisabled();
+
+    // a valid link brings the preview back
+    fireEvent.change(input, { target: { value: 'example.com/a' } });
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.getByTestId('preview-qr')).toBeInTheDocument();
+  });
+
+  it('hides the preview whenever the payload overflows the engine, and only then', async () => {
+    render(<BuilderClient />);
+    const input = screen.getByPlaceholderText('https://');
+
+    // short invalid input still previews — a validation error is not a capacity overflow
+    fireEvent.change(input, { target: { value: 'not a link' } });
+    expect(screen.getByRole('alert')).toHaveTextContent('Enter a valid link, like example.com.');
+    expect(screen.getByTestId('preview-qr')).toBeInTheDocument();
+
+    // oversize payload on a valid link hides the preview without crashing
+    // (payload = 'https://example.com/…' = 2331 + 1 code units)
+    fireEvent.change(input, { target: { value: 'example.com/' + 'a'.repeat(2312) } });
+    expect(screen.getByRole('alert')).toHaveTextContent('Content is too long for a QR code.');
+    expect(screen.queryByTestId('preview-qr')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Download QR' })).toBeDisabled();
+
+    // the engine is the gate, not the error key: an invalid URL with an
+    // oversize payload must hide the preview rather than crash the render
+    fireEvent.change(input, { target: { value: 'exa mple.com/' + 'a'.repeat(2400) } });
+    expect(screen.getByRole('alert')).toHaveTextContent('Enter a valid link, like example.com.');
+    expect(screen.queryByTestId('preview-qr')).not.toBeInTheDocument();
+
+    // same for an invalid e-mail with an oversize body
+    await userEvent.click(screen.getByRole('button', { name: 'E-mail' }));
+    fireEvent.change(screen.getByLabelText('To'), { target: { value: 'bad' } });
+    fireEvent.change(screen.getByLabelText('Body'), { target: { value: 'x'.repeat(2400) } });
+    expect(screen.getByRole('alert')).toHaveTextContent('Enter a valid e-mail address.');
+    expect(screen.queryByTestId('preview-qr')).not.toBeInTheDocument();
   });
 
   it('renders Russian step titles and tabs when locale is ru', async () => {

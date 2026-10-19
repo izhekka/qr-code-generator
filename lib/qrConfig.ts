@@ -13,6 +13,20 @@ export function errorCorrectionLevel(settings: Settings): ErrorCorrectionLevel {
   return settings.logo.dataUrl ? 'H' : 'M';
 }
 
+/** Standard Model 2 byte-mode capacity at version 40 — the engine's hard ceiling. */
+const MODEL2_MAX_M = 2331;
+const MODEL2_MAX_H = 1273;
+
+/**
+ * Longest payload the engine can actually encode given the effective EC level.
+ * Compared against `buildPayload(...).length` (UTF-16 code units): the engine's
+ * byte mode also consumes one byte per code unit (chars > 255 are truncated —
+ * the generator's own byte math), so this is not a UTF-8 byte count.
+ */
+export function maxPayloadLength(settings: Settings): number {
+  return errorCorrectionLevel(settings) === 'H' ? MODEL2_MAX_H : MODEL2_MAX_M;
+}
+
 /**
  * The module count of the rendered QR. The same generator, level and payload
  * as buildQrConfig hands to the library, so the count always matches what the
@@ -49,6 +63,8 @@ export function buildQrConfig(settings: Settings, size = 1000): Options {
     type: 'svg',
     data: buildPayload(settings.content),
     margin: Math.round(size * 0.06),
+    // qrcode-generator emits standard Model 2 (ISO/IEC 18004) symbols only —
+    // versions 1–40 auto-selected; any engine swap must preserve that contract.
     qrOptions: { errorCorrectionLevel: errorCorrectionLevel(settings) },
     dotsOptions: { color: hex(p.color), type: p.dotType, gradient: pattern },
     cornersSquareOptions: { color: hex(settings.corners.squareColor), type: settings.corners.squareType },

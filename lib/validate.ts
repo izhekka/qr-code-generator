@@ -1,4 +1,5 @@
 import { buildPayload, isValidEmail, isValidUrl } from './payload';
+import { maxPayloadLength } from './qrConfig';
 import type { Settings } from './types';
 
 // Stable message keys: components translate them via copy.validation so the
@@ -23,6 +24,11 @@ export function getValidationError(settings: Settings): ValidationErrorKey | nul
       if (!c.phone.trim()) return 'enterPhone';
       break;
   }
-  if (buildPayload(c).length > 2500) return 'tooLong';
+  if (!isEncodable(settings)) return 'tooLong';
   return null;
+}
+
+/** True when the payload fits the engine's Model 2 capacity at the effective EC level. */
+export function isEncodable(settings: Settings): boolean {
+  return buildPayload(settings.content).length <= maxPayloadLength(settings);
 }

@@ -3,7 +3,7 @@
 import { useReducer, useRef } from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import { DEFAULT_SETTINGS, settingsReducer } from '@/lib/settings';
-import { getValidationError } from '@/lib/validate';
+import { getValidationError, isEncodable } from '@/lib/validate';
 import { buildQrConfig } from '@/lib/qrConfig';
 import { useLocale } from './i18n';
 import { ContentSection } from './ContentSection';
@@ -61,7 +61,11 @@ export function BuilderClient() {
       <div className="flex flex-col items-center gap-4 lg:sticky lg:top-6 lg:self-start">
         <Panel title={copy.steps.three}>
           <div className="flex flex-col items-center gap-4">
-            <QrPreview settings={settings} qr={qr.current} />
+            {/* QrPreview runs the real engine during render (moduleCount), which
+                throws once the payload overflows its Model 2 capacity — hide
+                the preview until the payload fits again. Not keyed on the
+                validation error: invalid input that still fits previews fine. */}
+            {isEncodable(settings) && <QrPreview settings={settings} qr={qr.current} />}
             <DownloadPanel settings={settings} dispatch={dispatch} error={error} />
           </div>
         </Panel>
