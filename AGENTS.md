@@ -13,7 +13,10 @@ Read [`docs/README.md`](docs/README.md) for the full documentation map.
   rendering, styling, export) happens in the browser. Pages are statically
   prerendered by Next.js.
 - **No login, no tracking, no uploads.** The landing page sells this privacy;
-  don't add anything that contradicts it.
+  don't add anything that contradicts it. Exception: cookieless Vercel Web
+  Analytics (aggregate page-view counts only — no cookies, no personal data,
+  QR content never leaves the browser). Any other analytics or tracking is
+  forbidden.
 - **Exactly two pages:** the landing `/` and the QR constructor
   `/builder-static`. New features belong inside one of them.
 - **Never name an app route after an `Object.prototype` property**

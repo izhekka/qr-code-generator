@@ -116,3 +116,13 @@ Conventions every sticker must honor:
   frame's art and clear of labels; copy that pattern.
 - Free-text colors are sanitized with `hex(input)` (invalid → `#000000`) —
   anything fed into library options or SVG markup must pass through it.
+
+## Analytics
+
+[Vercel Web Analytics](https://vercel.com/docs/analytics/quickstart) counts
+page views via `<Analytics />` from `@vercel/analytics/next`, rendered once in
+`app/layout.tsx`. It is cookieless and collects no personal data; the tracking
+script is injected only on Vercel deployments — in development the package
+loads a debug script that records nothing — so local development never sends
+anything. Custom events are not tracked (Pro/Enterprise only, and the
+privacy carve-out in AGENTS.md covers page views only).
