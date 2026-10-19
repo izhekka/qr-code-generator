@@ -17,8 +17,11 @@ Read [`docs/README.md`](docs/README.md) for the full documentation map.
   Analytics (aggregate page-view counts only — no cookies, no personal data,
   QR content never leaves the browser). Any other analytics or tracking is
   forbidden.
-- **Exactly two pages:** the landing `/` and the QR constructor
-  `/builder-static`. New features belong inside one of them.
+- **Two app pages plus guides.** The app lives on exactly two pages: the
+  landing `/` and the QR constructor `/builder-static`. New *app features*
+  belong inside one of them. The site additionally serves statically
+  prerendered guide pages under `/guides/…` for search intents; guides render
+  content and link into the builder, but contain no QR logic of their own.
 - **Never name an app route after an `Object.prototype` property**
   (`constructor`, `hasOwnProperty`, `toString`, …) — the Vercel Next builder
   crashes on such route names (`Unsupported output type: "undefined"`). This

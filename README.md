@@ -2,8 +2,9 @@
 
 A static QR code generator. QR rendering, styling and export run entirely
 in the browser; the server only serves static assets (no API routes, no
-runtime server code). Two pages: the landing page (`/`) and the QR
-constructor (`/builder-static`).
+runtime server code). Two app pages: the landing page (`/`) and the QR
+constructor (`/builder-static`), plus statically prerendered guide pages
+under `/guides/`.
 
 ## Tech stack
 

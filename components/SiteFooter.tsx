@@ -13,6 +13,7 @@ export function SiteFooter() {
         <p>{copy.footer.tagline}</p>
         <p className="flex items-center gap-4">
           <Link href="/#faq" className="hover:text-[#23234f]">{copy.footer.faq}</Link>
+          <Link href="/guides" className="hover:text-[#23234f]">{copy.footer.guides}</Link>
           <a
             href={CONTRIBUTE_URL}
             target="_blank"

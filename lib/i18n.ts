@@ -14,7 +14,7 @@ export function systemLocale(browserLanguage?: string): Locale {
 
 export type Copy = {
   header: { brand: string; nav: { howItWorks: string; features: string; qrTypes: string; faq: string }; createCta: string };
-  footer: { tagline: string; faq: string; contribute: string };
+  footer: { tagline: string; faq: string; contribute: string; guides: string };
   hero: { title: string; subtitle: string; createCta: string };
   howItWorks: { title: string; steps: Array<{ lead: string; rest: string }> };
   features: { title: string; items: Array<{ title: string; text: string }> };
@@ -39,7 +39,7 @@ const en: Copy = {
     nav: { howItWorks: 'How it works', features: 'Features', qrTypes: 'QR types', faq: 'FAQ' },
     createCta: 'Create Static QR',
   },
-  footer: { tagline: 'Free QR codes that never expire.', faq: 'FAQ', contribute: 'Contribute' },
+  footer: { tagline: 'Free QR codes that never expire.', faq: 'FAQ', contribute: 'Contribute', guides: 'Guides' },
   hero: {
     title: 'No sign-ups. No payments. Just grab your working QR code.',
     subtitle: 'Pick a type, design it, download it. The whole thing takes under a minute.',
@@ -173,7 +173,7 @@ const ru: Copy = {
     nav: { howItWorks: 'Как это работает', features: 'Возможности', qrTypes: 'Типы QR', faq: 'Вопросы и ответы' },
     createCta: 'Создать QR-код',
   },
-  footer: { tagline: 'Бесплатные QR-коды, которые не устаревают.', faq: 'Вопросы и ответы', contribute: 'Участвовать' },
+  footer: { tagline: 'Бесплатные QR-коды, которые не устаревают.', faq: 'Вопросы и ответы', contribute: 'Участвовать', guides: 'Гайды' },
   hero: {
     title: 'Без регистрации. Без оплаты. Просто заберите свой рабочий QR-код.',
     subtitle: 'Выберите тип, оформите, скачайте. Всё меньше чем за минуту.',
