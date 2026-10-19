@@ -3,7 +3,28 @@
 import Link from 'next/link';
 
 import { useLocale } from '@/components/i18n';
+import { SITE_DESCRIPTION, SITE_URL } from '@/lib/seo';
 import { CONTRIBUTE_URL } from '@/components/SiteFooter';
+
+const JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'QR',
+  url: `${SITE_URL}/`,
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any',
+  description: SITE_DESCRIPTION,
+  offers: { '@type': 'Offer', price: 0, priceCurrency: 'USD' },
+};
+
+function LdJson() {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+    />
+  );
+}
 
 const STEP_CLASS = 'flex items-start gap-4 rounded-2xl bg-white p-6 shadow-sm';
 const NUM_CLASS = 'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#23234f] font-bold text-white';
@@ -23,6 +44,7 @@ export default function Home() {
   return (
     <>
       <main>
+        <LdJson />
         <section className="flex flex-col items-center gap-8 px-6 py-24 text-center sm:py-32">
           <h1 className="max-w-3xl bg-gradient-to-r from-[#23234f] via-[#4b3d99] to-[#7b5cd6] bg-clip-text text-4xl font-bold leading-tight text-transparent sm:text-6xl">
             {copy.hero.title}

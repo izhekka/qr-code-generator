@@ -26,4 +26,15 @@ describe('landing page', () => {
     expect(screen.getByText(COPY.ru.faq.items[0].q)).toBeInTheDocument();
     window.localStorage.removeItem('qr-locale');
   });
+
+  it('embeds WebApplication JSON-LD in the prerendered markup', () => {
+    render(<Home />);
+    const script = document.querySelector('script[type="application/ld+json"]');
+    expect(script).not.toBeNull();
+    const data = JSON.parse(script?.textContent ?? '');
+    expect(data['@type']).toBe('WebApplication');
+    expect(data.applicationCategory).toBe('UtilitiesApplication');
+    expect(data.url).toBe('https://qr.w-app.online/');
+    expect(data.offers).toEqual({ '@type': 'Offer', price: 0, priceCurrency: 'USD' });
+  });
 });
