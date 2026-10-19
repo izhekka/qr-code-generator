@@ -22,7 +22,7 @@ export type Copy = {
   qrTypes: { title: string; items: Array<{ title: string; text: string }>; tryCta: string };
   faq: { title: string; items: Array<{ q: string; a: string }>; contribute: { q: string; pre: string; linkText: string; post: string } };
   cta: { title: string; subtitle: string; createCta: string };
-  content: { types: { link: string; text: string; email: string; call: string }; linkLabel: string; textLabel: string; to: string; subject: string; body: string; phoneLabel: string };
+  content: { types: { link: string; text: string; email: string; call: string; vcard: string; wifi: string; event: string; sms: string; social: string; pdf: string; appstore: string }; linkLabel: string; textLabel: string; to: string; subject: string; body: string; phoneLabel: string; vcard: { firstName: string; lastName: string; org: string; title: string; phone: string; email: string; website: string; address: string }; wifi: { ssid: string; password: string; security: string; showPassword: string; open: string; hidden: string }; event: { title: string; start: string; end: string; allDay: string; location: string; description: string }; sms: { phone: string; message: string }; presetHelp: { social: string; pdf: string; appstore: string } };
   steps: { one: string; two: string; three: string };
   tabs: { sticker: string; pattern: string; corners: string; logo: string };
   pattern: { caption: string; colorLabel: string; gradient: string; from: string; to: string; backgroundColor: string; transparent: string; backgroundGradient: string; backgroundFrom: string; backgroundTo: string };
@@ -30,7 +30,7 @@ export type Copy = {
   sticker: { caption: string; color: string; textColor: string };
   logo: { upload: string; previewAlt: string; alt: string; size: string; warn40: string; remove: string; pickImage: string; readError: string };
   download: { format: string; size: string; cta: string; failed: string };
-  validation: { enterUrl: string; invalidUrl: string; enterText: string; invalidEmail: string; enterPhone: string; tooLong: string };
+  validation: { enterUrl: string; invalidUrl: string; enterText: string; invalidEmail: string; enterPhone: string; tooLong: string; enterName: string; enterSsid: string; enterPassword: string; enterTitle: string; enterStart: string; endBeforeStart: string };
 };
 
 const en: Copy = {
@@ -98,13 +98,31 @@ const en: Copy = {
     createCta: 'Create Static QR',
   },
   content: {
-    types: { link: 'Link', text: 'Text', email: 'E-mail', call: 'Call' },
+    types: { link: 'Link', text: 'Text', email: 'E-mail', call: 'Call', vcard: 'Contact', wifi: 'Wi-Fi', event: 'Event', sms: 'SMS', social: 'Social', pdf: 'PDF', appstore: 'App' },
     linkLabel: 'Enter your Website',
     textLabel: 'Enter your text',
     to: 'To',
     subject: 'Subject',
     body: 'Body',
     phoneLabel: 'Phone number',
+    vcard: {
+      firstName: 'First name', lastName: 'Last name', org: 'Company', title: 'Job title',
+      phone: 'Phone', email: 'E-mail', website: 'Website', address: 'Address',
+    },
+    wifi: {
+      ssid: 'Network name (SSID)', password: 'Password', security: 'Security',
+      showPassword: 'WPA / WPA2 / WPA3', open: 'Open (no password)', hidden: 'Hidden network',
+    },
+    event: {
+      title: 'Event title', start: 'Starts', end: 'Ends', allDay: 'All day',
+      location: 'Location', description: 'Description',
+    },
+    sms: { phone: 'Phone number', message: 'Message (optional)' },
+    presetHelp: {
+      social: 'Paste your Linktree, Instagram or other profile page URL.',
+      pdf: 'Paste the URL of a hosted PDF file.',
+      appstore: 'Paste the Google Play or App Store URL.',
+    },
   },
   steps: { one: '1 · Complete the content', two: '2 · Design your QR code', three: '3 · Preview & download' },
   tabs: { sticker: 'Sticker', pattern: 'Pattern', corners: 'Corners', logo: 'Logo' },
@@ -140,6 +158,12 @@ const en: Copy = {
     invalidEmail: 'Enter a valid e-mail address.',
     enterPhone: 'Enter a phone number.',
     tooLong: 'Content is too long for a QR code.',
+    enterName: 'Add at least a first or last name.',
+    enterSsid: 'Enter the network name.',
+    enterPassword: 'Enter the network password.',
+    enterTitle: 'Enter the event title.',
+    enterStart: 'Pick the start time.',
+    endBeforeStart: 'The end cannot be before the start.',
   },
 };
 
@@ -208,13 +232,31 @@ const ru: Copy = {
     createCta: 'Создать QR-код',
   },
   content: {
-    types: { link: 'Ссылка', text: 'Текст', email: 'Почта', call: 'Звонок' },
+    types: { link: 'Ссылка', text: 'Текст', email: 'Почта', call: 'Звонок', vcard: 'Контакт', wifi: 'Wi-Fi', event: 'Событие', sms: 'SMS', social: 'Соцсети', pdf: 'PDF', appstore: 'Приложение' },
     linkLabel: 'Введите адрес сайта',
     textLabel: 'Введите текст',
     to: 'Кому',
     subject: 'Тема',
     body: 'Текст письма',
     phoneLabel: 'Номер телефона',
+    vcard: {
+      firstName: 'Имя', lastName: 'Фамилия', org: 'Организация', title: 'Должность',
+      phone: 'Телефон', email: 'Эл. почта', website: 'Сайт', address: 'Адрес',
+    },
+    wifi: {
+      ssid: 'Имя сети (SSID)', password: 'Пароль', security: 'Защита',
+      showPassword: 'WPA / WPA2 / WPA3', open: 'Без пароля', hidden: 'Скрытая сеть',
+    },
+    event: {
+      title: 'Название события', start: 'Начало', end: 'Окончание', allDay: 'Весь день',
+      location: 'Место', description: 'Описание',
+    },
+    sms: { phone: 'Номер телефона', message: 'Сообщение (необязательно)' },
+    presetHelp: {
+      social: 'Вставьте ссылку на свою страницу в соцсети или агрегатор.',
+      pdf: 'Вставьте ссылку на PDF-файл в интернете.',
+      appstore: 'Вставьте ссылку Google Play или App Store.',
+    },
   },
   steps: { one: '1 · Заполните содержимое', two: '2 · Оформите QR-код', three: '3 · Просмотр и скачивание' },
   tabs: { sticker: 'Стикер', pattern: 'Узор', corners: 'Углы', logo: 'Логотип' },
@@ -250,6 +292,12 @@ const ru: Copy = {
     invalidEmail: 'Введите корректный адрес почты.',
     enterPhone: 'Введите номер телефона.',
     tooLong: 'Содержимое слишком длинное для QR-кода.',
+    enterName: 'Укажите хотя бы имя или фамилию.',
+    enterSsid: 'Укажите имя сети.',
+    enterPassword: 'Укажите пароль сети.',
+    enterTitle: 'Укажите название события.',
+    enterStart: 'Укажите время начала.',
+    endBeforeStart: 'Окончание не может быть раньше начала.',
   },
 };
 

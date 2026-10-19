@@ -31,7 +31,14 @@ Next-specific code.
 `Settings` → `buildQrConfig(settings, size)` (`lib/qrConfig.ts`) →
 `qr-code-styling` options. `buildPayload` (`lib/payload.ts`) encodes content
 into the QR string; `getValidationError` (`lib/validate.ts`) returns the
-human error or `null`.
+human error or `null`. Content types live in `lib/types.ts` (`QrType`):
+`link`, `text`, `email`, `call`, plus the payload-bearing `vcard` (VCARD 3.0),
+`wifi` (`WIFI:` with spec escaping), `event` (floating-time iCalendar) and
+`sms` (`SMSTO:`), and the URL presets `social`/`pdf`/`appstore` that reuse the
+link encoder. The per-type forms are small components in
+`components/content/`; state updates ride `setField` or `setContentPatch`.
+Oversize payloads surface as `tooLong` through the capacity rule from the QR
+standard compliance section.
 
 ### QR standard compliance
 

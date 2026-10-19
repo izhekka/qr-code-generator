@@ -56,7 +56,13 @@ describe('buildQrConfig', () => {
 const settings = (over: (s: Settings) => Settings): Settings =>
   over(structuredClone(DEFAULT_SETTINGS));
 
-const baseContent = { link: '', text: '', email: { to: '', subject: '', body: '' }, phone: '' };
+const baseContent = {
+  link: '', text: '', email: { to: '', subject: '', body: '' }, phone: '',
+  vcard: { firstName: '', lastName: '', org: '', title: '', phone: '', email: '', website: '', address: '' },
+  wifi: { ssid: '', password: '', security: 'WPA' as const, hidden: false },
+  event: { title: '', start: '', end: '', allDay: false, location: '', description: '' },
+  sms: { phone: '', message: '' },
+};
 
 describe('maxPayloadLength', () => {
   it('follows the effective EC level', () => {
@@ -93,6 +99,19 @@ describe('moduleCount renders standard Model 2 matrices', () => {
       ...s,
       logo: { dataUrl: 'data:image/png;base64,AAA', size: 0.4 },
     })));
+    // the payload-bearing content types added later must satisfy Model 2 too
+    states.push(
+      settings(s => ({ ...s, content: { ...baseContent, type: 'vcard',
+        vcard: { firstName: 'Ada', lastName: 'Lovelace', org: 'AE', title: 'Founder',
+          phone: '+1 555 0100', email: 'ada@example.com', website: 'example.com', address: 'London' } } })),
+      settings(s => ({ ...s, content: { ...baseContent, type: 'wifi',
+        wifi: { ssid: 'home;net', password: 'p:a"s', security: 'WPA', hidden: true } } })),
+      settings(s => ({ ...s, content: { ...baseContent, type: 'event',
+        event: { title: 'Offsite', start: '2026-03-01T09:00', end: '2026-03-01T11:00',
+          allDay: false, location: 'HQ', description: 'Desc' } } })),
+      settings(s => ({ ...s, content: { ...baseContent, type: 'sms',
+        sms: { phone: '+1 555 0100', message: 'Table for 2?' } } })),
+    );
     for (const state of states) assertModel2Geometry(moduleCount(state));
   });
 

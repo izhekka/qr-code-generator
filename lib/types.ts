@@ -1,6 +1,27 @@
-export type QrType = 'link' | 'text' | 'email' | 'call';
+export type QrType =
+  | 'link' | 'text' | 'email' | 'call'
+  | 'vcard' | 'wifi' | 'event' | 'sms'
+  | 'social' | 'pdf' | 'appstore';
 
 export type ContentField = 'link' | 'text' | 'phone' | 'emailTo' | 'emailSubject' | 'emailBody';
+
+export interface VCardContent {
+  firstName: string; lastName: string; org: string; title: string;
+  phone: string; email: string; website: string; address: string;
+}
+
+export type WifiSecurity = 'WPA' | 'WEP' | 'nopass';
+
+export interface WifiContent {
+  ssid: string; password: string; security: WifiSecurity; hidden: boolean;
+}
+
+export interface EventContent {
+  title: string; start: string; end: string; allDay: boolean;
+  location: string; description: string;
+}
+
+export interface SmsContent { phone: string; message: string; }
 
 export interface Content {
   type: QrType;
@@ -8,6 +29,10 @@ export interface Content {
   text: string;
   email: { to: string; subject: string; body: string };
   phone: string;
+  vcard: VCardContent;
+  wifi: WifiContent;
+  event: EventContent;
+  sms: SmsContent;
 }
 
 export type DotType =

@@ -4,16 +4,25 @@ import type { Action } from '@/lib/actions';
 import type { ValidationErrorKey } from '@/lib/validate';
 import type { ContentField, QrType, Settings } from '@/lib/types';
 import { useLocale } from './i18n';
+import { inputClass } from './content/forms';
+import { VCardForm } from './content/VCardForm';
+import { WifiForm } from './content/WifiForm';
+import { EventForm } from './content/EventForm';
+import { SmsForm } from './content/SmsForm';
 
 const TYPES: { id: QrType; icon: string }[] = [
   { id: 'link', icon: '🔗' },
   { id: 'text', icon: '≡' },
   { id: 'email', icon: '✉' },
   { id: 'call', icon: '☎' },
+  { id: 'vcard', icon: '👤' },
+  { id: 'wifi', icon: '📶' },
+  { id: 'event', icon: '📅' },
+  { id: 'sms', icon: '💬' },
+  { id: 'social', icon: '🌐' },
+  { id: 'pdf', icon: '📄' },
+  { id: 'appstore', icon: '📱' },
 ];
-
-const inputClass =
-  'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#7b5cd6] focus:outline-none';
 
 export function ContentSection({ settings, dispatch, error }: {
   settings: Settings;
@@ -43,7 +52,7 @@ export function ContentSection({ settings, dispatch, error }: {
         ))}
       </div>
 
-      {content.type === 'link' && (
+      {(content.type === 'link' || content.type === 'social' || content.type === 'pdf' || content.type === 'appstore') && (
         <label className="flex flex-col gap-1 text-sm font-medium">
           {copy.content.linkLabel}
           <input
@@ -53,6 +62,9 @@ export function ContentSection({ settings, dispatch, error }: {
             onChange={set('link')}
             className={inputClass}
           />
+          {content.type !== 'link' && (
+            <p className="text-xs text-gray-500">{copy.content.presetHelp[content.type]}</p>
+          )}
         </label>
       )}
 
@@ -85,6 +97,22 @@ export function ContentSection({ settings, dispatch, error }: {
           {copy.content.phoneLabel}
           <input type="tel" placeholder="+1 555 010 2030" value={content.phone} onChange={set('phone')} className={inputClass} />
         </label>
+      )}
+
+      {content.type === 'vcard' && (
+        <VCardForm settings={settings} dispatch={dispatch} />
+      )}
+
+      {content.type === 'wifi' && (
+        <WifiForm settings={settings} dispatch={dispatch} />
+      )}
+
+      {content.type === 'event' && (
+        <EventForm settings={settings} dispatch={dispatch} />
+      )}
+
+      {content.type === 'sms' && (
+        <SmsForm settings={settings} dispatch={dispatch} />
       )}
 
       {error && <p className="text-sm text-red-600" role="alert">{copy.validation[error]}</p>}

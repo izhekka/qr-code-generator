@@ -2,7 +2,13 @@ import type { Action } from './actions';
 import type { Settings } from './types';
 
 export const DEFAULT_SETTINGS: Settings = {
-  content: { type: 'link', link: '', text: '', email: { to: '', subject: '', body: '' }, phone: '' },
+  content: {
+    type: 'link', link: '', text: '', email: { to: '', subject: '', body: '' }, phone: '',
+    vcard: { firstName: '', lastName: '', org: '', title: '', phone: '', email: '', website: '', address: '' },
+    wifi: { ssid: '', password: '', security: 'WPA', hidden: false },
+    event: { title: '', start: '', end: '', allDay: false, location: '', description: '' },
+    sms: { phone: '', message: '' },
+  },
   stickerId: null,
   // black ink everywhere; the background stays white so the default QR scans
   sticker: { color: '#000000', textColor: '#000000' },
@@ -21,6 +27,8 @@ export function settingsReducer(state: Settings, action: Action): Settings {
   switch (action.type) {
     case 'setQrType':
       return { ...state, content: { ...state.content, type: action.qrType } };
+    case 'setContentPatch':
+      return { ...state, content: { ...state.content, ...action.patch } };
     case 'setField':
       switch (action.field) {
         case 'link': return { ...state, content: { ...state.content, link: action.value } };

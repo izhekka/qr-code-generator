@@ -192,3 +192,42 @@ test('switching content type updates the encoded payload', async ({ page }, test
   const decoded = jsQR(new Uint8ClampedArray(png.data), png.width, png.height);
   expect(decoded?.data).toBe('mailto:hello@example.com?subject=Hi%20there');
 });
+
+test('new content types encode and scan: Wi-Fi escaping, vCard, event, sms', async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
+  await page.goto('/builder-static');
+
+  const scanback = async (label: string) => {
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByRole('button', { name: 'Download QR' }).click(),
+    ]);
+    const path = testInfo.outputPath(`qr-${label}.png`);
+    await download.saveAs(path);
+    const png = PNG.sync.read(fs.readFileSync(path));
+    return jsQR(new Uint8ClampedArray(png.data), png.width, png.height)?.data;
+  };
+
+  await page.getByRole('button', { name: 'Wi-Fi' }).click();
+  await page.getByRole('textbox', { name: 'Network name (SSID)' }).fill('home net');
+  await page.getByRole('textbox', { name: 'Password', exact: true }).fill('p:s,1');
+  await page.locator('[data-testid="preview-qr"] svg').first().waitFor();
+  expect(await scanback('wifi')).toBe('WIFI:T:WPA;S:home net;P:p\\:s\\,1;;');
+
+  await page.getByRole('button', { name: 'Contact' }).click();
+  await page.getByRole('textbox', { name: 'First name' }).fill('Ada');
+  await page.getByRole('textbox', { name: 'Last name' }).fill('Lovelace');
+  await page.locator('[data-testid="preview-qr"] svg').first().waitFor();
+  expect(await scanback('vcard')).toContain('BEGIN:VCARD');
+
+  await page.getByRole('button', { name: 'Event' }).click();
+  await page.getByRole('textbox', { name: 'Event title', exact: true }).fill('Offsite');
+  await page.getByLabel('Starts').fill('2026-03-01T09:00');
+  await page.locator('[data-testid="preview-qr"] svg').first().waitFor();
+  expect(await scanback('event')).toContain('DTSTART:20260301T090000');
+
+  await page.getByRole('button', { name: 'SMS' }).click();
+  await page.getByRole('textbox', { name: 'Phone number' }).fill('5550101000');
+  await page.locator('[data-testid="preview-qr"] svg').first().waitFor();
+  expect(await scanback('sms')).toBe('SMSTO:5550101000:');
+});

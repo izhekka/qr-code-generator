@@ -29,6 +29,27 @@ describe('settingsReducer', () => {
     expect(s.content.text).toBe('');
   });
 
+  it('patches nested content groups wholesale', () => {
+    const next = settingsReducer(DEFAULT_SETTINGS, {
+      type: 'setContentPatch',
+      patch: { wifi: { ssid: 'home', password: 'pw', security: 'WEP', hidden: true } },
+    });
+    expect(next.content.wifi).toEqual({ ssid: 'home', password: 'pw', security: 'WEP', hidden: true });
+    expect(next.content.vcard.firstName).toBe('');
+    expect(next.content.event.allDay).toBe(false);
+  });
+
+  it('sets new-type fields via content patches', () => {
+    let next = settingsReducer(DEFAULT_SETTINGS, {
+      type: 'setContentPatch',
+      patch: { vcard: { ...DEFAULT_SETTINGS.content.vcard, firstName: 'Ada' } },
+    });
+    expect(next.content.vcard.firstName).toBe('Ada');
+    next = settingsReducer(next, { type: 'setContentPatch', patch: { event: { ...next.content.event, start: '2026-03-01T09:00', allDay: true } } });
+    expect(next.content.event.start).toBe('2026-03-01T09:00');
+    expect(next.content.event.allDay).toBe(true);
+  });
+
   it('updates logo size without touching other settings', () => {
     const s = settingsReducer({ ...DEFAULT_SETTINGS, stickerId: 'phone' }, {
       type: 'setLogo', patch: { size: 0.4 },
