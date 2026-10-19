@@ -34,4 +34,12 @@ describe('root layout metadata', () => {
     // would make the metadata carry verification and fail this test.
     expect(metadata.verification).toBeUndefined();
   });
+
+  it('enables the iOS home-screen app fallback (hides Safari UI)', () => {
+    expect(metadata.appleWebApp).toEqual({
+      capable: true,
+      title: 'QR',
+      statusBarStyle: 'default',
+    });
+  });
 });

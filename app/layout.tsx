@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 import { LocaleProvider } from '@/components/i18n';
+import { ServiceWorkerRegistrar } from '@/components/ServiceWorkerRegistrar';
 import { SiteFooter } from '@/components/SiteFooter';
 import { SiteHeader } from '@/components/SiteHeader';
 import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '@/lib/seo';
@@ -30,6 +31,11 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
+  appleWebApp: {
+    capable: true,
+    title: 'QR',
+    statusBarStyle: 'default',
+  },
   ...(googleVerification ? { verification: { google: googleVerification } } : {}),
 };
 
@@ -42,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <SiteFooter />
           <Analytics />
+          <ServiceWorkerRegistrar />
         </LocaleProvider>
       </body>
     </html>
